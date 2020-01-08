@@ -26,33 +26,30 @@ namespace kOS.Suffixed.Part
         }
         private void RCSInitializeSuffixes()
         {
-            AddSuffix("ENABLE", new NoArgsVoidSuffix(Enable));
-            AddSuffix("DISABLE", new NoArgsVoidSuffix(Disable));
-            AddSuffix("ENABLEYAW", new NoArgsVoidSuffix(EnableYaw));
-            AddSuffix("DISABLEYAW", new NoArgsVoidSuffix(DisableYaw));
-            AddSuffix("ENABLEPITCH", new NoArgsVoidSuffix(EnablePitch));
-            AddSuffix("DISABLEPITCH", new NoArgsVoidSuffix(DisablePitch));
-            AddSuffix("ENABLEROLL", new NoArgsVoidSuffix(EnableRoll));
-            AddSuffix("DISABLEROLL", new NoArgsVoidSuffix(DisableRoll));
-            AddSuffix("ENABLESTARBOARD", new NoArgsVoidSuffix(EnableX));
-            AddSuffix("DISABLESTARBOARD", new NoArgsVoidSuffix(DisableX));
-            AddSuffix("ENABLETOP", new NoArgsVoidSuffix(EnableY));
-            AddSuffix("DISABLETOP", new NoArgsVoidSuffix(DisableY));
-            AddSuffix("ENABLEFORE", new NoArgsVoidSuffix(EnableZ));
-            AddSuffix("DISABLEFORE", new NoArgsVoidSuffix(DisableZ));
+            // Tweakables
+            AddSuffix("ENABLED", new SetSuffix<BooleanValue>(() => module.rcsEnabled, value => module.rcsEnabled = value));
+            AddSuffix("YAWENABLED", new SetSuffix<BooleanValue>(() => module.enableYaw, value => module.enableYaw = value));
+            AddSuffix("PITCHENABLED", new SetSuffix<BooleanValue>(() => module.enablePitch, value => module.enablePitch = value));
+            AddSuffix("ROLLENABLED", new SetSuffix<BooleanValue>(() => module.enableRoll, value => module.enableRoll = value));
+            AddSuffix("STARBOARDENABLED", new SetSuffix<BooleanValue>(() => module.enableX, value => module.enableX = value));
+            AddSuffix("TOPENABLED", new SetSuffix<BooleanValue>(() => module.enableY, value => module.enableY = value));
+            AddSuffix("FOREENABLED", new SetSuffix<BooleanValue>(() => module.enableZ, value => module.enableZ = value));
+            AddSuffix("FOREBYTHROTTLE", new SetSuffix<BooleanValue>(() => module.useThrottle, value => module.useThrottle = value));
+            AddSuffix("FULLTHRUST", new SetSuffix<BooleanValue>(() => module.fullThrust, value => module.fullThrust = value));
             AddSuffix("THRUSTLIMIT", new ClampSetSuffix<ScalarValue>(() => module.thrustPercentage, value => module.thrustPercentage = value, 0f, 100f, 0f, "thrust limit percentage for this rcs thruster"));
+            // Performance metrics
             AddSuffix("AVAILABLETHRUST", new Suffix<ScalarValue>(() => module.GetThrust(useThrustLimit: true)));
             AddSuffix("AVAILABLETHRUSTAT",  new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetThrust(atmPressure, useThrustLimit: true)));
             AddSuffix("MAXTHRUST", new Suffix<ScalarValue>(() => module.GetThrust()));
-            AddSuffix("THRUST", new Suffix<ScalarValue>(() => module.thrusterPower));
             AddSuffix("FUELFLOW", new Suffix<ScalarValue>(() => module.maxFuelFlow));
-            AddSuffix("ISP", new Suffix<ScalarValue>(() => module.GetIsp()));
+            AddSuffix("ISP", new Suffix<ScalarValue>(() => module.realISP));
             AddSuffix(new[] { "VISP", "VACUUMISP" }, new Suffix<ScalarValue>(() => module.GetIsp(0)));
             AddSuffix(new[] { "SLISP", "SEALEVELISP" }, new Suffix<ScalarValue>(() => module.GetIsp(1)));
             AddSuffix("FLAMEOUT", new Suffix<BooleanValue>(() => module.flameout));
             AddSuffix("ISPAT", new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetIsp(atmPressure)));
             AddSuffix("MAXTHRUSTAT", new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetThrust(atmPressure)));
             AddSuffix("THRUSTVECTORS", new Suffix<ListValue>(GetThrustVectors));
+            AddSuffix("CONSUMEDRESOURCES", new Suffix<ListValue>(GetConsumedResources, "A List of all resources consumed by this rcs thruster"));
         }
 
         public static ListValue PartsToList(IEnumerable<global::Part> parts, SharedObjects sharedObj)
@@ -85,81 +82,15 @@ namespace kOS.Suffixed.Part
             return toReturn;
         }
 
-        public void Enable()
+        public ListValue GetConsumedResources()
         {
-            ThrowIfNotCPUVessel();
-            module.rcsEnabled = true;
-        }
-        public void Disable()
-        {
-            ThrowIfNotCPUVessel();
-            module.rcsEnabled = false;
-        }
+            var resources = new ListValue();
+            foreach (Propellant p in module.propellants)
+            {
+                resources.Add(new StringValue(p.displayName));
+            }
 
-        public void EnableYaw()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableYaw = true;
-        }
-        public void DisableYaw()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableYaw = false;
-        }
-
-        public void EnablePitch()
-        {
-            ThrowIfNotCPUVessel();
-            module.enablePitch = true;
-        }
-        public void DisablePitch()
-        {
-            ThrowIfNotCPUVessel();
-            module.enablePitch = false;
-        }
-
-        public void EnableRoll()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableRoll = true;
-        }
-        public void DisableRoll()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableRoll = false;
-        }
-
-        public void EnableX()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableX = true;
-        }
-        public void DisableX()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableX = false;
-        }
-
-        public void EnableY()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableY = true;
-        }
-        public void DisableY()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableY = false;
-        }
-
-        public void EnableZ()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableZ = true;
-        }
-        public void DisableZ()
-        {
-            ThrowIfNotCPUVessel();
-            module.enableZ = false;
+            return resources;
         }
     }
 
