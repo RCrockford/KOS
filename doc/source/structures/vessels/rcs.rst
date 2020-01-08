@@ -70,22 +70,22 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type R
           - Disable dorsal/ventral control for this thruster.
         * - :attr:`THRUSTLIMIT`
           - :ref:`scalar <scalar>` (%)
-          - Tweaked thrust limit
+          - Tweaked thrust limit.
         * - :attr:`MAXTHRUST`
           - :ref:`scalar <scalar>` (kN)
           - Untweaked thrust limit.
         * - :meth:`MAXTHRUSTAT(pressure)`
           - :ref:`scalar <scalar>` (kN)
-          - Max thrust at the specified pressure (in standard Kerbin atmospheres). Zero if rcs disabled.
+          - Max thrust at the specified pressure (in standard Kerbin atmospheres).
         * - :attr:`THRUST`
           - :ref:`scalar <scalar>` (kN)
           - Current thrust. Zero if rcs disabled.
         * - :attr:`AVAILABLETHRUST`
           - :ref:`scalar <scalar>` (kN)
-          - Available thrust at full throttle accounting for thrust limiter. Zero if rcs disabled.
+          - Available thrust at full throttle accounting for thrust limiter.
         * - :meth:`AVAILABLETHRUSTAT(pressure)`
           - :ref:`scalar <scalar>` (kN)
-          - Available thrust at the specified pressure (in standard Kerbin atmospheres). Zero if rcs disabled.
+          - Available thrust at the specified pressure (in standard Kerbin atmospheres).
         * - :attr:`FUELFLOW`
           - :ref:`scalar <scalar>` (l/s)
           - Rate of fuel burn
@@ -109,7 +109,10 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type R
           - Synonym for SEALEVELISP
         * - :attr:`FLAMEOUT`
           - :ref:`Boolean <boolean>`
-          - Check if no more fuel
+          - Check if no more fuel.
+        * - :attr:`THRUSTVECTORS`
+          - :struct:`List`
+          - List of thrust :struct:`Vectors <Vector>` for this RCS module.
 
 
 .. note::
@@ -299,3 +302,11 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type R
     :type: :ref:`Boolean <boolean>`
 
     Is this rcs thruster failed because it is starved of a resource (monopropellant)?
+
+.. attribute:: RCS:THRUSTVECTORS
+
+    :access: Get only
+    :type: :struct:`List` of :struct:`Vectors <Vector>`
+
+    This gives a list of all the vectors that this RCS module can thrust along.
+

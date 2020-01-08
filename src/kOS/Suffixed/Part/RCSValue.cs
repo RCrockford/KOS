@@ -52,6 +52,7 @@ namespace kOS.Suffixed.Part
             AddSuffix("FLAMEOUT", new Suffix<BooleanValue>(() => module.flameout));
             AddSuffix("ISPAT", new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetIsp(atmPressure)));
             AddSuffix("MAXTHRUSTAT", new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetThrust(atmPressure)));
+            AddSuffix("THRUSTVECTORS", new Suffix<ListValue>(GetThrustVectors));
         }
 
         public static ListValue PartsToList(IEnumerable<global::Part> parts, SharedObjects sharedObj)
@@ -62,13 +63,24 @@ namespace kOS.Suffixed.Part
             {
                 foreach (var module in part.Modules)
                 {
-                    if (module is IEngineStatus)
+                    if (module is ModuleRCS)
                     {
                         toReturn.Add(vessel[part]);
                         // Only add each part once
                         break;
                     }
                 }
+            }
+            return toReturn;
+        }
+
+        public ListValue GetThrustVectors()
+        {
+            var toReturn = new ListValue();
+            foreach (Transform t in module.thrusterTransforms)
+            {
+                // RCS thrusts along -up. Possibly useZAxis property means it thrusts along -forward?
+                toReturn.Add(new Vector(-t.up));
             }
             return toReturn;
         }
