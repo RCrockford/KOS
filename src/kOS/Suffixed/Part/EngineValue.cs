@@ -102,6 +102,7 @@ namespace kOS.Suffixed.Part
             AddSuffix("MAXTHRUST", new Suffix<ScalarValue>(() => FilteredEngineList.Sum(e => e.GetThrust())));
             AddSuffix("THRUST", new Suffix<ScalarValue>(() => FilteredEngineList.Sum(e => e.finalThrust)));
             AddSuffix("FUELFLOW", new Suffix<ScalarValue>(() => FilteredEngineList.Sum(e => e.fuelFlowGui)));
+            AddSuffix("MAXFUELFLOW", new Suffix<ScalarValue>(() => FilteredEngineList.Sum(e => e.maxFuelFlow)));
             AddSuffix("ISP", new Suffix<ScalarValue>(GetIsp));
             AddSuffix(new[] { "VISP", "VACUUMISP" }, new Suffix<ScalarValue>(GetVacuumIsp));
             AddSuffix(new[] { "SLISP", "SEALEVELISP" }, new Suffix<ScalarValue>(GetSeaLevelIsp));
@@ -118,6 +119,7 @@ namespace kOS.Suffixed.Part
             AddSuffix("POSSIBLETHRUSTAT", new OneArgsSuffix<ScalarValue, ScalarValue>(GetPossibleThrustAtAtm));
             AddSuffix("MAXPOSSIBLETHRUST", new Suffix<ScalarValue>(() => FilteredEngineList.Sum(e => e.GetThrust(operational: false))));
             AddSuffix("MAXPOSSIBLETHRUSTAT", new OneArgsSuffix<ScalarValue, ScalarValue>(atm => FilteredEngineList.Sum(e => e.GetThrust(atm, operational: false))));
+            AddSuffix("CONSUMEDRESOURCES", new Suffix<Lexicon>(GetConsumedResources, "A List of all resources consumed by this engine"));
             //MultiMode features
             AddSuffix("MULTIMODE", new Suffix<BooleanValue>(() => MultiMode));
             AddSuffix("MODES", new Suffix<ListValue>(GetAllModes, "A List of all modes of this engine"));
@@ -211,6 +213,21 @@ namespace kOS.Suffixed.Part
         public ScalarValue GetPossibleThrustAtAtm(ScalarValue atmPressure)
         {
             return FilteredEngineList.Sum(e => e.GetThrust(atmPressure, useThrustLimit: true, operational: false));
+        }
+
+        public Lexicon GetConsumedResources()
+        {
+            var resources = new Lexicon();
+
+            foreach (ModuleEngines e in FilteredEngineList)
+            {
+                foreach (Propellant p in e.propellants)
+                {
+                    resources.Add(new StringValue(p.displayName), ScalarValue.Create(e.getMaxFuelFlow(p)));
+                }
+            }
+
+            return resources;
         }
 
         public ListValue GetAllModes()
