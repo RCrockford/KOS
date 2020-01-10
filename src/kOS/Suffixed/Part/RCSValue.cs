@@ -41,7 +41,7 @@ namespace kOS.Suffixed.Part
             AddSuffix("AVAILABLETHRUST", new Suffix<ScalarValue>(() => module.GetThrust(useThrustLimit: true)));
             AddSuffix("AVAILABLETHRUSTAT",  new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetThrust(atmPressure, useThrustLimit: true)));
             AddSuffix("MAXTHRUST", new Suffix<ScalarValue>(() => module.GetThrust()));
-            AddSuffix("FUELFLOW", new Suffix<ScalarValue>(() => module.maxFuelFlow));
+            AddSuffix(new[] { "MAXFUELFLOW", "MAXMASSFLOW" }, new Suffix<ScalarValue>(() => module.maxFuelFlow));
             AddSuffix("ISP", new Suffix<ScalarValue>(() => module.realISP));
             AddSuffix(new[] { "VISP", "VACUUMISP" }, new Suffix<ScalarValue>(() => module.GetIsp(0)));
             AddSuffix(new[] { "SLISP", "SEALEVELISP" }, new Suffix<ScalarValue>(() => module.GetIsp(1)));
@@ -49,7 +49,7 @@ namespace kOS.Suffixed.Part
             AddSuffix("ISPAT", new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetIsp(atmPressure)));
             AddSuffix("MAXTHRUSTAT", new OneArgsSuffix<ScalarValue, ScalarValue>((ScalarValue atmPressure) => module.GetThrust(atmPressure)));
             AddSuffix("THRUSTVECTORS", new Suffix<ListValue>(GetThrustVectors));
-            AddSuffix("CONSUMEDRESOURCES", new Suffix<ListValue>(GetConsumedResources, "A List of all resources consumed by this rcs thruster"));
+            AddSuffix("CONSUMEDRESOURCES", new Suffix<Lexicon>(GetConsumedResources, "A Lexicon of all resources consumed by this rcs thruster"));
         }
 
         public static ListValue PartsToList(IEnumerable<global::Part> parts, SharedObjects sharedObj)
@@ -76,18 +76,19 @@ namespace kOS.Suffixed.Part
             var toReturn = new ListValue();
             foreach (Transform t in module.thrusterTransforms)
             {
-                // RCS thrusts along -up. Possibly useZAxis property means it thrusts along -forward?
-                toReturn.Add(new Vector(-t.up));
+                // RCS thrusts along up. Possibly useZAxis property means it thrusts along forward?
+                toReturn.Add(new Vector(t.up));
             }
             return toReturn;
         }
 
-        public ListValue GetConsumedResources()
+        public Lexicon GetConsumedResources()
         {
-            var resources = new ListValue();
+            var resources = new Lexicon();
             foreach (Propellant p in module.propellants)
             {
-                resources.Add(new StringValue(p.displayName));
+                SafeHouse.Logger.Log(" RCS {0}  {1}: cur={2} req={3} ratio={4}", Part.name, p.displayName, p.currentAmount, p.currentRequirement, p.ratio);
+                resources.Add(new StringValue(p.displayName), new ConsumedResourceValue(null, p, Shared));
             }
 
             return resources;

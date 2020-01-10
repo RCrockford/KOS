@@ -54,8 +54,11 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
           - :ref:`scalar <scalar>` (kN)
           - Possible thrust at the specified pressure (in standard Kerbin atmospheres), when the engine is enabled.
         * - :attr:`FUELFLOW`
-          - :ref:`scalar <scalar>` (l/s maybe)
-          - Rate of fuel burn
+          - :ref:`scalar <scalar>` (kg/s)
+          - Current mass flow rate of fuel. Note: this returns non-standard units.
+        * - :attr:`MAXFUELFLOW`
+          - :ref:`scalar <scalar>` (kg/s)
+          - Untweaked maximum mass flow rate of fuel at full throttle. Note: this returns non-standard units.
         * - :attr:`ISP`
           - :ref:`scalar <scalar>`
           - `Specific impulse <http://wiki.kerbalspaceprogram.com/wiki/Specific_impulse>`_
@@ -99,7 +102,7 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
           - :ref:`string <string>`
           - Name of the current mode (only if multiple)
         * - :attr:`TOGGLEMODE`
-          - 
+          -
           - Switch to another mode (only if multiple)
         * - :attr:`PRIMARYMODE`
           - :ref:`Boolean <boolean>`
@@ -135,7 +138,7 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
     :type: :ref:`scalar <scalar>` (%)
 
     If this an engine with a thrust limiter (tweakable) enabled, what
-    percentage is it limited to?  Note that this is expressed as a 
+    percentage is it limited to?  Note that this is expressed as a
     percentage, not a simple 0..1 coefficient.  e.g. To set thrustlimit
     to half, you use a value of 50.0, not 0.5.
 
@@ -148,7 +151,7 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
     round it to the nearest 0.5 whenever you open the panel.  So if you
     do something like ``set ship:part[20]:thrustlimit to 10.5123.`` in
     your script, then look at the rightclick menu for the engine, the very
-    act of just looking at the menu will cause it to become 10.5 instead 
+    act of just looking at the menu will cause it to become 10.5 instead
     of 10.5123.  There isn't much that kOS can do to change this.  It's a
     user interface decision baked into the stock game.
 
@@ -218,13 +221,50 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
     Taking into account the thrust limiter tweakable setting, how much thrust would this engine give if the throttle was max at its current thrust limit setting and velocity, but at a different atmospheric pressure you pass into it.  The pressure is measured in ATM's, meaning 0.0 is a vacuum, 1.0 is sea level at Kerbin.  This will give the correct value even if the engine is currently disabled.
     (Pressure must be greater than or equal to zero.  If you pass in a
     negative value, it will be treated as if you had given a zero instead.)
-    
+
 .. attribute:: Engine:FUELFLOW
 
     :access: Get only
-    :type: :ref:`scalar <scalar>` (Liters/s? maybe)
+    :type: :ref:`scalar <scalar>` (kg/s)
 
-    Rate at which fuel is being burned. Not sure what the units are.
+    How much fuel mass is this engine consuming at this very moment.
+    Units are kg/s, note this is unlike most other mass quantites which are Mg.
+
+.. attribute:: Engine:MASSFLOW
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>` (kg/s)
+
+    Synonym for :FUELFLOW
+
+.. attribute:: Engine:MAXFUELFLOW
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>` (kg/s)
+
+    How much fuel mass would this engine consume at standard pressure and velocity if the throttle was max at 1.0, and the thrust limiter was max at 100%.  Note this might not be the engine's actual max fuel flow it could have under other air pressure conditions.  Some jet engines have a very different fuel consumption depending on how fast they are currently being rammed through the air.
+    Units are kg/s, note this is unlike most other mass quantites which are Mg.
+
+.. attribute:: Engine:MAXMASSFLOW
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>` (kg/s)
+
+    Synonym for :MAXFUELFLOW
+
+.. attribute:: Engine:FUELFLOWVOLUME
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>` (units/s)
+
+    How much fuel volume is this engine consuming at this very moment.
+
+.. attribute:: Engine:MAXFUELFLOWVOLUME
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>` (units/s)
+
+    How much fuel volume would this engine consume at standard pressure and velocity if the throttle was max at 1.0, and the thrust limiter was max at 100%.  Note this might not be the engine's actual max fuel flow it could have under other air pressure conditions.  Some jet engines have a very different fuel consumption depending on how fast they are currently being rammed through the air.
 
 .. attribute:: Engine:ISP
 
@@ -310,14 +350,14 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
     :access: Get only
     :type: :ref:`Boolean <boolean>`
 
-    Does this engine have multiple modes (i.e. RAPIER)? Check this before calling multi-mode specific suffixes.   
-    
+    Does this engine have multiple modes (i.e. RAPIER)? Check this before calling multi-mode specific suffixes.
+
 .. attribute:: Engine:MODES
 
     :access: Get only
     :type: :struct:`List` of strings
 
-    Lists names of modes of this engine if multimode, returns a list of 1 string "Single mode" otherwise.   
+    Lists names of modes of this engine if multimode, returns a list of 1 string "Single mode" otherwise.
 
 .. attribute:: Engine:MODE
 
@@ -328,21 +368,21 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
 
 .. method:: Engine:TOGGLEMODE
 
-    Call to switch to another mode. Only assessible for multi-mode engines.  
+    Call to switch to another mode. Only assessible for multi-mode engines.
 
 .. attribute:: Engine:PRIMARYMODE
 
     :access: Get/Set
     :type: :ref:`Boolean <boolean>`
 
-    True for primary mode, false for secondary. Setting to other value equals toggling the mode. Only assessible for multi-mode engines. 
+    True for primary mode, false for secondary. Setting to other value equals toggling the mode. Only assessible for multi-mode engines.
 
 .. attribute:: Engine:AUTOSWITCH
 
     :access: Get/Set
     :type: :ref:`Boolean <boolean>`
 
-    Is automatic switching enabled? Can set to switch between manual and automatic switching. Only assessible for multi-mode engines. 
+    Is automatic switching enabled? Can set to switch between manual and automatic switching. Only assessible for multi-mode engines.
 
 .. attribute:: Engine:HASGIMBAL
 
