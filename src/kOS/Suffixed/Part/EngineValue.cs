@@ -275,32 +275,58 @@ namespace kOS.Suffixed.Part
 
         public ScalarValue GetFuelFlow()
         {
-            double fuelFlow = 0;
-
-            foreach (ModuleEngines e in FilteredEngineList)
+            // fuelFlowGui is overidden by RealFuels to display massflow, so work around it.
+            if (HasRealFuels)
             {
-                foreach (Propellant p in e.propellants)
-                {
-                    fuelFlow += p.currentAmount / Time.fixedDeltaTime;
-                }
-            }
+                double fuelFlow = 0;
 
-            return fuelFlow;
+                foreach (ModuleEngines e in FilteredEngineList)
+                {
+                    // currentAmount does not update when there is no fuel flow, so only update when fuel is flowing.
+                    if (e.fuelFlowGui > 0.0f)
+                    {
+                        foreach (Propellant p in e.propellants)
+                        {
+                            fuelFlow += p.currentAmount / Time.fixedDeltaTime;
+                        }
+                    }
+                }
+
+                return fuelFlow;
+            }
+            else
+            {
+                // Stock just shows flow.
+                return FilteredEngineList.Sum(e => e.fuelFlowGui);
+            }
         }
 
         public ScalarValue GetMassFlow()
         {
-            double massFlow = 0;
-
-            foreach (ModuleEngines e in FilteredEngineList)
+            // fuelFlowGui is overidden by RealFuels to display massflow, so work around it.
+            if (HasRealFuels)
             {
-                foreach (Propellant p in e.propellants)
-                {
-                    massFlow += p.currentAmount * p.resourceDef.density / Time.fixedDeltaTime;
-                }
-            }
+                double massFlow = 0;
 
-            return massFlow;
+                foreach (ModuleEngines e in FilteredEngineList)
+                {
+                    // currentAmount does not update when there is no fuel flow, so only update when fuel is flowing.
+                    if (e.fuelFlowGui > 0.0f)
+                    {
+                        foreach (Propellant p in e.propellants)
+                        {
+                            massFlow += p.currentAmount * p.resourceDef.density / Time.fixedDeltaTime;
+                        }
+                    }
+                }
+
+                return massFlow;
+            }
+            else
+            {
+                // Stock just shows flow.
+                return FilteredEngineList.Sum(e => e.fuelFlowGui * e.mixtureDensity);
+            }
         }
 
         public BooleanValue GetUllage()
