@@ -87,7 +87,6 @@ namespace kOS.Suffixed.Part
             var resources = new Lexicon();
             foreach (Propellant p in module.propellants)
             {
-                SafeHouse.Logger.Log(" RCS {0}  {1}: cur={2} req={3} ratio={4}", Part.name, p.displayName, p.currentAmount, p.currentRequirement, p.ratio);
                 resources.Add(new StringValue(p.displayName), new ConsumedResourceValue(null, p, Shared));
             }
 
