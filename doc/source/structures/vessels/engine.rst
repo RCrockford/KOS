@@ -54,11 +54,17 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
           - :ref:`scalar <scalar>` (kN)
           - Possible thrust at the specified pressure (in standard Kerbin atmospheres), when the engine is enabled.
         * - :attr:`FUELFLOW`
-          - :ref:`scalar <scalar>` (kg/s)
-          - Current mass flow rate of fuel. Note: this returns non-standard units.
+          - :ref:`scalar <scalar>` (unit/s)
+          - Current volumetric flow rate of fuel.
         * - :attr:`MAXFUELFLOW`
-          - :ref:`scalar <scalar>` (kg/s)
-          - Untweaked maximum mass flow rate of fuel at full throttle. Note: this returns non-standard units.
+          - :ref:`scalar <scalar>` (unit/s)
+          - Untweaked maximum volumetric flow rate of fuel at full throttle.
+        * - :attr:`MASSFLOW`
+          - :ref:`scalar <scalar>` (Mg/s)
+          - Current mass flow rate of fuel.
+        * - :attr:`MAXMASSFLOW`
+          - :ref:`scalar <scalar>` (Mg/s)
+          - Untweaked maximum mass flow rate of fuel at full throttle.
         * - :attr:`ISP`
           - :ref:`scalar <scalar>`
           - `Specific impulse <http://wiki.kerbalspaceprogram.com/wiki/Specific_impulse>`_
@@ -116,6 +122,24 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
         * - :attr:`GIMBAL`
           - :struct:`Gimbal`
           - Gimbal of this engine (only if available)
+        * - :attr:`ULLAGE`
+          - :ref:`Boolean <boolean>`
+          - Does this engine need ullage (for RealFuels)
+        * - :attr:`FUELSTABILITY`
+          - :ref:`scalar <scalar>`
+          - How stable is the fuel for this engine (for RealFuels)
+        * - :attr:`PRESSUREFED`
+          - :ref:`Boolean <boolean>`
+          - Is this engine pressure fed? (for RealFuels)
+        * - :attr:`IGNITIONS`
+          - :ref:`scalar <scalar>`
+          - Number of ignitions remaining for this engine (for RealFuels)
+        * - :attr:`MINTHROTTLE`
+          - :ref:`scalar <scalar>`
+          - The minimum throttle setting for this engine (for RealFuels)
+        * - :attr:`CONFIG`
+          - :struct:`String`
+          - Engine configuration name (for RealFuels)
 
 
 .. note::
@@ -225,46 +249,30 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
 .. attribute:: Engine:FUELFLOW
 
     :access: Get only
-    :type: :ref:`scalar <scalar>` (kg/s)
-
-    How much fuel mass is this engine consuming at this very moment.
-    Units are kg/s, note this is unlike most other mass quantites which are Mg.
-
-.. attribute:: Engine:MASSFLOW
-
-    :access: Get only
-    :type: :ref:`scalar <scalar>` (kg/s)
-
-    Synonym for :FUELFLOW
-
-.. attribute:: Engine:MAXFUELFLOW
-
-    :access: Get only
-    :type: :ref:`scalar <scalar>` (kg/s)
-
-    How much fuel mass would this engine consume at standard pressure and velocity if the throttle was max at 1.0, and the thrust limiter was max at 100%.  Note this might not be the engine's actual max fuel flow it could have under other air pressure conditions.  Some jet engines have a very different fuel consumption depending on how fast they are currently being rammed through the air.
-    Units are kg/s, note this is unlike most other mass quantites which are Mg.
-
-.. attribute:: Engine:MAXMASSFLOW
-
-    :access: Get only
-    :type: :ref:`scalar <scalar>` (kg/s)
-
-    Synonym for :MAXFUELFLOW
-
-.. attribute:: Engine:FUELFLOWVOLUME
-
-    :access: Get only
     :type: :ref:`scalar <scalar>` (units/s)
 
     How much fuel volume is this engine consuming at this very moment.
 
-.. attribute:: Engine:MAXFUELFLOWVOLUME
+.. attribute:: Engine:MAXFUELFLOW
 
     :access: Get only
     :type: :ref:`scalar <scalar>` (units/s)
 
     How much fuel volume would this engine consume at standard pressure and velocity if the throttle was max at 1.0, and the thrust limiter was max at 100%.  Note this might not be the engine's actual max fuel flow it could have under other air pressure conditions.  Some jet engines have a very different fuel consumption depending on how fast they are currently being rammed through the air.
+    
+.. attribute:: Engine:MASSFLOW
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>` (Mg/s)
+
+    How much fuel mass is this engine consuming at this very moment.
+
+.. attribute:: Engine:MAXMASSFLOW
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>` (Mg/s)
+
+    How much fuel mass would this engine consume at standard pressure and velocity if the throttle was max at 1.0, and the thrust limiter was max at 100%.  Note this might not be the engine's actual max fuel flow it could have under other air pressure conditions.  Some jet engines have a very different fuel consumption depending on how fast they are currently being rammed through the air.
 
 .. attribute:: Engine:ISP
 
@@ -397,5 +405,47 @@ Some of the Parts returned by :ref:`LIST PARTS <list command>` will be of type E
     :type: :struct:`Gimbal`
 
     Returns the :struct:`Gimbal` attached to this engine. Only accessible if the gimbal is present (Use :attr:`Engine:HASGIMBAL` to check if available).
+    
+.. attribute:: Engine:ULLAGE
+
+    :access: Get only
+    :type: :ref:`Boolean <boolean>`
+    
+    If RealFuels is installed, returns true if this engine needs ullage, otherwise returns false.
+
+.. attribute:: Engine:FUELSTABILITY`
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>`
+    
+    If RealFuels is installed, returns the fuel stability of this engines as a value between 0 and 1 (where 1 is fullly stable), otherwsie returns 1.
+
+.. attribute:: Engine:PRESSUREFED`
+
+    :access: Get only
+    :type: :ref:`Boolean <boolean>`
+    
+    If RealFuels is installed, returns true if this engine is pressure fed, otherwise returns false.
+
+.. attribute:: Engine:IGNITIONS`
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>`
+    
+    If RealFuels is installed, returns the number of ignitions remaining, or -1 if it is unlimited, otherwise returns -1.
+
+.. attribute:: Engine:MINTHROTTLE`
+
+    :access: Get only
+    :type: :ref:`scalar <scalar>`
+    
+    If RealFuels is installed, returns the minimum throttle setting as a value between 0 and 1, otherwise returns 0.
+
+.. attribute:: Engine:CONFIG`
+
+    :access: Get only
+    :type: :struct:`String`
+    
+    If RealFuels is installed, returns the configuration name of this engine if applicable, otherwise returns the part title.
 
 .. _isp: http://en.wikipedia.org/wiki/Specific_impulse

@@ -154,7 +154,7 @@ namespace kOS.Suffixed.Part
             AddSuffix("HASGIMBAL", new Suffix<BooleanValue>(() => HasGimbal));
             AddSuffix("GIMBAL", new Suffix<GimbalFields>(GetGimbal));
 
-            // Experimental RealFuels stuff
+            // RealFuels stuff
             AddSuffix("ULLAGE", new Suffix<BooleanValue>(GetUllage));
             AddSuffix("FUELSTABILITY", new Suffix<ScalarValue>(GetFuelStability));
             AddSuffix("PRESSUREFED", new Suffix<BooleanValue>(GetPressureFed));
