@@ -370,11 +370,16 @@ namespace kOS.Suffixed.Part
 
                     if (ullageField != null && pressureFedField != null && ullageSetField != null)
                     {
+                        var ullageSet = ullageSetField.GetValue(e);
+
                         bool pressureOK = !(bool)pressureFedField.GetValue(e);
                         if (!pressureOK)
                         {
-                            var pressureOKMethod = ullageSetField.GetType().GetMethod("PressureOK", BindingFlags.Public | BindingFlags.Instance);
-                            pressureOK = pressureOKMethod != null ? (bool)pressureOKMethod.Invoke(ullageSetField.GetValue(e), new object[] { }) : true;
+                            var pressureOKMethod = ullageSet.GetType().GetMethod("PressureOK", BindingFlags.Public | BindingFlags.Instance);
+                            if (pressureOKMethod != null)
+                            {
+                                pressureOK = System.Convert.ToBoolean(pressureOKMethod.Invoke(ullageSet, new object[] { }));
+                            }
                         }
 
                         if (!pressureOK)
@@ -385,8 +390,11 @@ namespace kOS.Suffixed.Part
                         else if ((bool)ullageField.GetValue(e))
                         {
                             // Use minimum value if multiple engines
-                            var ullageStabilityMethod = ullageSetField.GetType().GetMethod("GetUllageStability", BindingFlags.Public | BindingFlags.Instance);
-                            stability = Mathf.Min(stability, ullageStabilityMethod != null ? (float)ullageStabilityMethod.Invoke(ullageSetField.GetValue(e), new object[] { }) : 1.0f);
+                            var ullageStabilityMethod = ullageSet.GetType().GetMethod("GetUllageStability", BindingFlags.Public | BindingFlags.Instance);
+                            if (ullageStabilityMethod != null)
+                            {
+                                stability = Mathf.Min(stability, System.Convert.ToSingle(ullageStabilityMethod.Invoke(ullageSet, new object[] { })));
+                            }
                         }
                     }
                 }
