@@ -5,25 +5,25 @@ namespace kOS.Module
 {
     internal class kOSLightModule : PartModule
     {
-        [KSPField(isPersistant = true, guiName = "Required Power for Lights", guiActive = true)]
+        [KSPField(isPersistant = true, guiName = "Required Power for Lights", guiActive = true, groupName = "kOS", groupDisplayName = "kOS")]
         public float resourceAmount = 0.001f;
 
-        [KSPField(isPersistant = true, guiActive = true, guiName = "Light R")]
+        [KSPField(isPersistant = true, guiActive = true, guiName = "Light R", groupName = "kOS", groupDisplayName = "kOS")]
         [UI_FloatRange(maxValue = 1, minValue = 0, scene = UI_Scene.Flight, stepIncrement = 0.01f)]
         protected float red = 1;
 
-        [KSPField(isPersistant = true, guiActive = true, guiName = "Light G")]
+        [KSPField(isPersistant = true, guiActive = true, guiName = "Light G", groupName = "kOS", groupDisplayName = "kOS")]
         [UI_FloatRange(maxValue = 1, minValue = 0, scene = UI_Scene.Flight, stepIncrement = 0.01f)]
         protected float green = 1;
 
-        [KSPField(isPersistant = true, guiActive = true, guiName = "Light B")]
+        [KSPField(isPersistant = true, guiActive = true, guiName = "Light B", groupName = "kOS", groupDisplayName = "kOS")]
         [UI_FloatRange(maxValue = 1, minValue = 0, scene = UI_Scene.Flight, stepIncrement = 0.01f)]
         protected float blue = 1;
 
-        [KSPField(isPersistant = true, guiActive = true, guiName = "Power Starved")]
+        [KSPField(isPersistant = true, guiActive = true, guiName = "Power Starved", groupName = "kOS", groupDisplayName = "kOS")]
         private bool powerStarved = false;
 
-        [KSPField(isPersistant = false, guiName = "Last requested power", guiActive = true)]
+        [KSPField(isPersistant = false, guiName = "Last requested power", guiActive = true, groupName = "kOS", groupDisplayName = "kOS")]
         public float lastResource = 0.2f;
 
         [KSPField(isPersistant = false, guiActive = false)]
